@@ -50,7 +50,8 @@ namespace Plugin.LocalNotifications
 		/// <param name="body">Body or description of the notification</param>
 		/// <param name="id">Id of the notification</param>
 		/// <param name="notifyTime">Time to show notification</param>
-        public void Show(string title, string body, int id, DateTime notifyTime)
+        /// /// <param name="repeat">Set up repeat on notification</param>
+        public void Show(string title, string body, int id, DateTime notifyTime,RepeatInterval repeat)
         {
             var xmlData = string.Format(_TOAST_TEXT02_TEMPLATE, title, body);
 
