@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Xml.Serialization;
 using Android.OS;
+using Java.Lang;
 
 namespace Plugin.LocalNotifications
 {
@@ -16,6 +17,7 @@ namespace Plugin.LocalNotifications
     {
         string _packageName => Application.Context.PackageName;
         NotificationManager _manager => (NotificationManager)Application.Context.GetSystemService(Context.NotificationService);
+        readonly DateTime _jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Get or Set Resource Icon to display
@@ -78,7 +80,7 @@ namespace Plugin.LocalNotifications
         /// <param name="body">Body or description of the notification</param>
         /// <param name="id">Id of the notification</param>
         /// <param name="notifyTime">Time to show notification</param>
-        public void Show(string title, string body, int id, DateTime notifyTime)
+        public void Show(string title, string body, int id, DateTime notifyTime, RepeatInterval repeat)
         {
             var intent = CreateIntent(id);
 
@@ -103,7 +105,46 @@ namespace Plugin.LocalNotifications
             var triggerTime = NotifyTimeInMilliseconds(localNotification.NotifyTime);
             var alarmManager = GetAlarmManager();
 
-            alarmManager.Set(AlarmType.RtcWakeup, triggerTime, pendingIntent);
+            if(repeat == RepeatInterval.No)
+            {
+                alarmManager.Set(AlarmType.RtcWakeup, triggerTime, pendingIntent);
+            }
+            else
+            {
+                long repeateDay = 0;
+
+                switch (repeat)
+                {
+
+                    case RepeatInterval.Year:
+                        repeateDay = 31557600000;
+                        break;
+                    case RepeatInterval.Month:
+                        repeateDay = 2629800000;
+                        break;
+                    case RepeatInterval.Day:
+                        repeateDay = 86400000;
+                        break;
+                    case RepeatInterval.Hour:
+                        repeateDay = 3600000;
+                        break;
+                    case RepeatInterval.Minute:
+                        repeateDay = 60000;
+                        break;
+                    case RepeatInterval.Second:
+                        repeateDay = 1000;
+                        break;
+                }
+
+                var totalMilliSeconds = (long)(notifyTime.ToUniversalTime() - _jan1st1970).TotalMilliseconds;
+                if (totalMilliSeconds < JavaSystem.CurrentTimeMillis())
+                {
+                    totalMilliSeconds = totalMilliSeconds + repeateDay;
+                }
+
+                alarmManager.SetRepeating(AlarmType.RtcWakeup, totalMilliSeconds, repeateDay, pendingIntent);
+            }
+
         }
 
         /// <summary>

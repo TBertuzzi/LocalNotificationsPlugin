@@ -29,7 +29,7 @@ namespace Plugin.LocalNotifications
             }
             else
             {
-                Show(title, body, id, DateTime.Now);
+                Show(title, body, id, DateTime.Now,RepeatInterval.No);
             }
         }
 
@@ -40,7 +40,7 @@ namespace Plugin.LocalNotifications
         /// <param name="body">Body or description of the notification</param>
         /// <param name="id">Id of the notification</param>
         /// <param name="notifyTime">Time to show notification</param>
-        public void Show(string title, string body, int id, DateTime notifyTime)
+        public void Show(string title, string body, int id, DateTime notifyTime,RepeatInterval repeat)
         {
             if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
             {
@@ -54,11 +54,34 @@ namespace Plugin.LocalNotifications
                     FireDate = (NSDate)notifyTime,
                     AlertTitle = title,
                     AlertBody = body,
-                    UserInfo = NSDictionary.FromObjectAndKey(NSObject.FromObject(id), NSObject.FromObject(NotificationKey))
+                    UserInfo = NSDictionary.FromObjectAndKey(NSObject.FromObject(id), NSObject.FromObject(NotificationKey)),
+                    RepeatInterval = GetRepeatInterval(repeat)
                 };
 
                 UIApplication.SharedApplication.ScheduleLocalNotification(notification);
             }
+        }
+
+        private NSCalendarUnit GetRepeatInterval(RepeatInterval repeat)
+        {
+            switch (repeat)
+            {
+                case RepeatInterval.Year:
+                    return NSCalendarUnit.Year;
+                case RepeatInterval.Month:
+                    return NSCalendarUnit.Month;
+                case RepeatInterval.Day:
+                    return NSCalendarUnit.Day;
+                case RepeatInterval.Hour:
+                    return NSCalendarUnit.Hour;
+                case RepeatInterval.Minute:
+                    return NSCalendarUnit.Minute;
+                case RepeatInterval.Second:
+                    return NSCalendarUnit.Second;
+                default:
+                    return NSCalendarUnit.Calendar;
+            }
+
         }
 
         /// <summary>
@@ -97,6 +120,7 @@ namespace Plugin.LocalNotifications
             {
                 Title = title,
                 Body = body
+                
             };
             
             var request = UNNotificationRequest.FromIdentifier(id.ToString(), content, trigger);

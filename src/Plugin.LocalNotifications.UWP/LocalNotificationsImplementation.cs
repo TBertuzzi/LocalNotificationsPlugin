@@ -64,6 +64,7 @@ namespace Plugin.LocalNotifications
             var scheduledTileNotification = new ScheduledTileNotification(xmlDoc, correctedTime)
             {
                 Id = id.ToString()
+                
             };
 
             TileUpdateManager.CreateTileUpdaterForApplication().AddToSchedule(scheduledTileNotification);

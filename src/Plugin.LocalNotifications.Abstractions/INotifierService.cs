@@ -22,7 +22,7 @@ namespace Plugin.LocalNotifications.Abstractions
         /// <param name="body">Body or description of the notification</param>
         /// <param name="id">Id of the notification</param>
         /// <param name="notifyTime">Time to show notification</param>
-        void Show(string title, string body, int id, DateTime notifyTime);
+        void Show(string title, string body, int id, DateTime notifyTime, RepeatInterval repeat = RepeatInterval.No);
 
         /// <summary>
         /// Cancel a local notification
