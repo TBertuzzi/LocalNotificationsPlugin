@@ -35,6 +35,12 @@ CrossLocalNotifications.Current.Show("title", "body");
 CrossLocalNotifications.Current.Show("title", "body", 101, DateTime.Now.AddSeconds(5));
 ```
 
+#### Display a local notification at a scheduled date/time with repeat
+
+```csharp
+CrossLocalNotifications.Current.Show("title", "body", 101, DateTime.Now.AddSeconds(5),RepeatInterval.Hour);
+```
+
 #### Cancel a local notification
 
 ```csharp
